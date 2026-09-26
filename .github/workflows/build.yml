@@ -3,6 +3,8 @@ on: [push, workflow_dispatch]
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
     - uses: actions/checkout@v4
     
@@ -23,14 +25,14 @@ jobs:
       run: |
         cd project_folder
         chmod +x gradlew || true
-        # Вместо удаления настроек точечно заменяем Windows-путь автора на правильный путь Java в Linux
         if [ -f gradle.properties ]; then
           sed -i 's|org.gradle.java.home=.*|org.gradle.java.home='"$JAVA_HOME"'|g' gradle.properties
         fi
         if [ -f gradlew ]; then ./gradlew build --no-daemon; else gradle build --no-daemon; fi
         
-    - name: Upload Clean Jar
-      uses: actions/upload-artifact@v4
+    - name: Create Release and Upload JAR
+      uses: softprops/action-gh-release@v2
       with:
-        name: ShizaClient-JAR-File
-        path: "**/build/libs/*.jar"
+        tag_name: v1.0.0
+        name: Clean Shiza Client Build
+        files: "**/build/libs/*.jar"
