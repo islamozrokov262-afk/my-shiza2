@@ -23,7 +23,9 @@ jobs:
       run: |
         cd project_folder
         chmod +x gradlew || true
-        if [ -f gradlew ]; then ./gradlew build --no-daemon; else gradle build --no-daemon; fi
+        # Принудительно очищаем файл gradle.properties от настроек автора ПК
+        if [ -f gradle.properties ]; then echo "" > gradle.properties; fi
+        if [ -f gradlew ]; then ./gradlew build --no-daemon -Dorg.gradle.java.home=$JAVA_HOME; else gradle build --no-daemon -Dorg.gradle.java.home=$JAVA_HOME; fi
         
     - name: Upload Clean Jar
       uses: actions/upload-artifact@v4
